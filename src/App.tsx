@@ -40,11 +40,11 @@ function App() {
               </Table.Cell>
               <Table.Cell>{neo.name}</Table.Cell>
               <Table.Cell>
-                {neo.estimated_diameter.kilometers.estimated_diameter_min} -{" "}
-                {neo.estimated_diameter.kilometers.estimated_diameter_max}
+                {neo.estimated_diameter.meters.estimated_diameter_min.toFixed(1)} -{" "}
+                {neo.estimated_diameter.meters.estimated_diameter_max.toFixed(1)}
               </Table.Cell>
               <Table.Cell>
-                {neo.close_approach_data[0].miss_distance.kilometers}
+                {Number(neo.close_approach_data[0].miss_distance.kilometers).toFixed(0)}
               </Table.Cell>
             </Table.Row>
           ))}

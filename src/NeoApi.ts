@@ -26,15 +26,15 @@ interface CloseApproachData {
   close_approach_date_full: string;
   epoch_date_close_approach: string;
   relative_velocity: {
-    kilometers_per_second: number;
-    kilometers_per_hour: number;
-    miles_per_hour: number;
+    kilometers_per_second: string;
+    kilometers_per_hour: string;
+    miles_per_hour: string;
   };
   miss_distance: {
-    astronomical: number;
-    lunar: number;
-    kilometers: number;
-    miles: number;
+    astronomical: string;
+    lunar: string;
+    kilometers: string;
+    miles: string;
   };
   orbiting_body: string;
 }
