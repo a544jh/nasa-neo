@@ -48,7 +48,7 @@ export async function fetchNeos(
   startDate: string,
   endDate: string
 ): Promise<NearEarthObject[]> {
-  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=2015-09-07&end_date=2015-09-08&api_key=DEMO_KEY`;
+  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=DEMO_KEY`;
   let response = await (await fetch(url)).json();
   return flattenResponse(response);
 }

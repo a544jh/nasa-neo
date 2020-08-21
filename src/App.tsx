@@ -1,23 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { Header, Table } from "semantic-ui-react";
+import { Container, Header, Table, Form } from "semantic-ui-react";
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
+import SemanticDatepicker from 'react-semantic-ui-datepickers';
+import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import { fetchNeos, NearEarthObject } from "./NeoApi";
+import { formatISO, parseISO, add } from 'date-fns' // TODO: add to package.json
 
 function App() {
+
   const [neos, setNeos] = useState<NearEarthObject[]>([]);
+  const [startDate, setStartDate] = useState<string>('2015-09-07')
+  const [endDate, setEndDate] = useState<string>('2015-09-08')
+  // TODO date picker for end date_
+  // refactor date parsing?
 
   useEffect(() => {
-    fetchNeos("", "").then((neos) => {
+    let endDate = formatISO(add(parseISO(startDate), {days: 7}), {representation: 'date'})
+    fetchNeos(startDate, endDate).then((neos) => {
       setNeos(neos);
       console.log(neos);
     });
-  }, []);
+  }, [startDate]);
 
   return (
-    <div className="App">
+    <Container>
       <Header as="h1">Hello Semantic UI</Header>
-      <input type="date"></input>
+      <Form>
+        <SemanticDatepicker label='Start date' onChange={(e, data) => {
+          let date = data.value
+          if (date instanceof Date) {
+            setStartDate(formatISO(date, {representation: 'date'}))
+          }
+        }}
+        value={parseISO(startDate)} />
+      </Form>
       <Table celled>
         <Table.Header>
           <Table.Row>
@@ -50,7 +67,7 @@ function App() {
           ))}
         </Table.Body>
       </Table>
-    </div>
+    </Container>
   );
 }
 
