@@ -7,6 +7,9 @@ import {
   Dimmer,
   Loader,
   Icon,
+  Progress,
+  Message,
+  Segment,
 } from "semantic-ui-react";
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
@@ -23,6 +26,7 @@ function App() {
   const [endDate, setEndDate] = useState<Date>(() =>
     add(new Date(), { days: 7 })
   );
+  const [hasError, setError] = useState(false);
 
   useEffect(() => {
     refreshNeos();
@@ -30,10 +34,16 @@ function App() {
 
   const refreshNeos = () => {
     setLoading(true);
-    fetchNeos(startDate, endDate).then((neos) => {
-      setNeos(neos);
-      setLoading(false);
-    });
+    fetchNeos(startDate, endDate)
+      .then((neos) => {
+        setNeos(neos);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setNeos([]);
+        setError(true);
+        setLoading(false);
+      });
   };
 
   const onChangeStartDate = (
@@ -63,7 +73,7 @@ function App() {
   };
 
   return (
-    <Container>
+    <Container style={{paddingTop: '1rem'}}>
       <Header as="h1">Near Earth Objects</Header>
       <Form>
         <Form.Group inline>
@@ -79,10 +89,17 @@ function App() {
             filterDate={endDateSelectable}
           />
           <Form.Button onClick={refreshNeos}>
-            <Icon name='search' /> Search
+            <Icon name="search" /> Search
           </Form.Button>
         </Form.Group>
       </Form>
+
+      {hasError ? (
+        <Message error>
+          <Message.Header>Oops, something went wrong!</Message.Header>
+          <p>Maybe you want to try again later</p>
+        </Message>
+      ) : null}
 
       <Dimmer.Dimmable>
         <Dimmer active={isLoading} verticalAlign="top">

@@ -50,11 +50,15 @@ export async function fetchNeos(
   startDate: Date,
   endDate: Date
 ): Promise<NearEarthObject[]> {
-  const startDateStr = formatISO(startDate, {representation: 'date'})
-  const endDateStr = formatISO(endDate, {representation: 'date'})
+  const startDateStr = formatISO(startDate, { representation: "date" });
+  const endDateStr = formatISO(endDate, { representation: "date" });
   const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateStr}&end_date=${endDateStr}&api_key=DEMO_KEY`;
-  let response = await (await fetch(url)).json();
-  return flattenResponse(response);
+  const response = await fetch(url);
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch NEOs");
+  }
+  const data = await response.json();
+  return flattenResponse(data);
 }
 
 function flattenResponse(resp: NeoApiResponse): NearEarthObject[] {
