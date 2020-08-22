@@ -16,15 +16,16 @@ import "semantic-ui-css/semantic.min.css";
 import SemanticDatepicker from "react-semantic-ui-datepickers";
 import "react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css";
 import { fetchNeos, NearEarthObject } from "./NeoApi";
-import { add } from "date-fns";
+import { add, startOfToday } from "date-fns";
 import { SemanticDatepickerProps } from "react-semantic-ui-datepickers/dist/types";
+import _ from "lodash";
 
 function App() {
   const [isLoading, setLoading] = useState(false);
   const [neos, setNeos] = useState<NearEarthObject[]>([]);
-  const [startDate, setStartDate] = useState<Date>(() => new Date());
+  const [startDate, setStartDate] = useState<Date>(() => startOfToday());
   const [endDate, setEndDate] = useState<Date>(() =>
-    add(new Date(), { days: 7 })
+    add(startOfToday(), { days: 7 })
   );
   const [hasError, setError] = useState(false);
 
@@ -72,8 +73,22 @@ function App() {
     return date >= startDate && date <= maxEndDate;
   };
 
+  const maxDiameterNeo = _.maxBy(
+    neos,
+    (neo) => neo.estimated_diameter.meters.estimated_diameter_max
+  );
+  const maxDiameter =
+    maxDiameterNeo?.estimated_diameter.meters.estimated_diameter_max;
+
+  const maxDistanceNeo = _.maxBy(
+    neos,
+    (neo) => neo.close_approach_data[0].miss_distance.kilometers
+  );
+  const maxDistance =
+    maxDistanceNeo?.close_approach_data[0].miss_distance.kilometers;
+
   return (
-    <Container style={{paddingTop: '1rem'}}>
+    <Container style={{ paddingTop: "1rem" }}>
       <Header as="h1">Near Earth Objects</Header>
       <Form>
         <Form.Group inline>
@@ -132,16 +147,30 @@ function App() {
                 <Table.Cell>
                   {neo.estimated_diameter.meters.estimated_diameter_min.toFixed(
                     1
-                  )}{" "}
-                  -{" "}
+                  )}
+                  {"m - "}
                   {neo.estimated_diameter.meters.estimated_diameter_max.toFixed(
                     1
                   )}
+                  m
+                  <Progress
+                    value={neo.estimated_diameter.meters.estimated_diameter_max}
+                    total={maxDiameter}
+                    size="tiny"
+                    style={{ margin: 0 }}
+                  />
                 </Table.Cell>
                 <Table.Cell>
                   {Number(
                     neo.close_approach_data[0].miss_distance.kilometers
                   ).toFixed(0)}
+                  km
+                  <Progress
+                    value={neo.close_approach_data[0].miss_distance.kilometers}
+                    total={maxDistance}
+                    size="tiny"
+                    style={{ margin: 0 }}
+                  />
                 </Table.Cell>
               </Table.Row>
             ))}
