@@ -1,40 +1,68 @@
 import React, { useEffect, useState } from "react";
-import { Container, Header, Table, Form } from "semantic-ui-react";
+import { Container, Header, Table, Form, Dimmer, Loader, Segment } from "semantic-ui-react";
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
 import SemanticDatepicker from 'react-semantic-ui-datepickers';
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import { fetchNeos, NearEarthObject } from "./NeoApi";
-import { formatISO, parseISO, add } from 'date-fns' // TODO: add to package.json
+import { formatISO, parseISO, add } from 'date-fns'
+import { SemanticDatepickerProps } from "react-semantic-ui-datepickers/dist/types";
 
 function App() {
 
+  const [isLoading, setLoading] = useState(false)
   const [neos, setNeos] = useState<NearEarthObject[]>([]);
-  const [startDate, setStartDate] = useState<string>('2015-09-07')
-  const [endDate, setEndDate] = useState<string>('2015-09-08')
-  // TODO date picker for end date_
-  // refactor date parsing?
+  const [startDate, setStartDate] = useState<Date>(() => new Date())
+  const [endDate, setEndDate] = useState<Date>(() => add(new Date(), {days: 7}))
 
   useEffect(() => {
-    let endDate = formatISO(add(parseISO(startDate), {days: 7}), {representation: 'date'})
+    refreshNeos();
+  }, []);
+
+  const refreshNeos = () => {
+    setLoading(true);
     fetchNeos(startDate, endDate).then((neos) => {
       setNeos(neos);
-      console.log(neos);
+      setLoading(false)
     });
-  }, [startDate]);
+  }
+
+  const onSetStartDate = (event: React.SyntheticEvent | undefined, data: SemanticDatepickerProps) => {
+    const date = data.value
+    if (date instanceof Date) {
+      setStartDate(date)
+      setEndDate(add(date, {days: 7}))
+    }
+  }
+
+  const onSetEndDate = (event: React.SyntheticEvent | undefined, data: SemanticDatepickerProps) => {
+    const date = data.value
+    if (date instanceof Date) {
+      setEndDate(date)
+    }
+  }
+
+  const endDateSelectable = (date: Date): boolean => {
+    const maxEndDate = add(startDate, {days: 7})
+    return date >= startDate && date <= maxEndDate
+  }
 
   return (
     <Container>
       <Header as="h1">Hello Semantic UI</Header>
       <Form>
-        <SemanticDatepicker label='Start date' onChange={(e, data) => {
-          let date = data.value
-          if (date instanceof Date) {
-            setStartDate(formatISO(date, {representation: 'date'}))
-          }
-        }}
-        value={parseISO(startDate)} />
+        <Form.Group>
+          <SemanticDatepicker label='Start date' onChange={onSetStartDate}
+          value={startDate}/>
+          <SemanticDatepicker label='End date' onChange={onSetEndDate}
+          value={endDate} filterDate={endDateSelectable}/>
+        </Form.Group>
       </Form>
+
+      <Dimmer.Dimmable>
+        <Dimmer active={isLoading} verticalAlign='top'>
+          <Loader />
+        </Dimmer>
       <Table celled>
         <Table.Header>
           <Table.Row>
@@ -57,8 +85,7 @@ function App() {
               </Table.Cell>
               <Table.Cell>{neo.name}</Table.Cell>
               <Table.Cell>
-                {neo.estimated_diameter.meters.estimated_diameter_min.toFixed(1)} -{" "}
-                {neo.estimated_diameter.meters.estimated_diameter_max.toFixed(1)}
+                {neo.estimated_diameter.meters.estimated_diameter_min.toFixed(1)} - {neo.estimated_diameter.meters.estimated_diameter_max.toFixed(1)}
               </Table.Cell>
               <Table.Cell>
                 {Number(neo.close_approach_data[0].miss_distance.kilometers).toFixed(0)}
@@ -67,6 +94,7 @@ function App() {
           ))}
         </Table.Body>
       </Table>
+      </Dimmer.Dimmable>
     </Container>
   );
 }

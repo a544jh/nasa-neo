@@ -1,3 +1,5 @@
+import { formatISO } from "date-fns";
+
 interface NeoApiResponse {
   near_earth_objects: NeoDates;
 }
@@ -45,10 +47,12 @@ interface EstimatedDiameter {
 }
 
 export async function fetchNeos(
-  startDate: string,
-  endDate: string
+  startDate: Date,
+  endDate: Date
 ): Promise<NearEarthObject[]> {
-  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=DEMO_KEY`;
+  const startDateStr = formatISO(startDate, {representation: 'date'})
+  const endDateStr = formatISO(endDate, {representation: 'date'})
+  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateStr}&end_date=${endDateStr}&api_key=DEMO_KEY`;
   let response = await (await fetch(url)).json();
   return flattenResponse(response);
 }
