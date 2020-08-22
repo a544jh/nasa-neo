@@ -52,7 +52,10 @@ export async function fetchNeos(
 ): Promise<NearEarthObject[]> {
   const startDateStr = formatISO(startDate, { representation: "date" });
   const endDateStr = formatISO(endDate, { representation: "date" });
-  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateStr}&end_date=${endDateStr}&api_key=DEMO_KEY`;
+  const storedApiKey = window.localStorage.getItem("nasaApiKey");
+  const apiKey = storedApiKey === null ? "DEMO_KEY" : storedApiKey;
+
+  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateStr}&end_date=${endDateStr}&api_key=${apiKey}`;
   const response = await fetch(url);
   if (response.status !== 200) {
     throw new Error("Failed to fetch NEOs");
