@@ -6,14 +6,14 @@ import {
   Form,
   Dimmer,
   Loader,
-  Segment,
+  Icon,
 } from "semantic-ui-react";
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
 import SemanticDatepicker from "react-semantic-ui-datepickers";
 import "react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css";
 import { fetchNeos, NearEarthObject } from "./NeoApi";
-import { formatISO, parseISO, add } from "date-fns";
+import { add } from "date-fns";
 import { SemanticDatepickerProps } from "react-semantic-ui-datepickers/dist/types";
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
     });
   };
 
-  const onSetStartDate = (
+  const onChangeStartDate = (
     event: React.SyntheticEvent | undefined,
     data: SemanticDatepickerProps
   ) => {
@@ -47,7 +47,7 @@ function App() {
     }
   };
 
-  const onSetEndDate = (
+  const onChangeEndDate = (
     event: React.SyntheticEvent | undefined,
     data: SemanticDatepickerProps
   ) => {
@@ -64,20 +64,23 @@ function App() {
 
   return (
     <Container>
-      <Header as="h1">Hello Semantic UI</Header>
+      <Header as="h1">Near Earth Objects</Header>
       <Form>
-        <Form.Group>
+        <Form.Group inline>
           <SemanticDatepicker
             label="Start date"
-            onChange={onSetStartDate}
+            onChange={onChangeStartDate}
             value={startDate}
           />
           <SemanticDatepicker
             label="End date"
-            onChange={onSetEndDate}
+            onChange={onChangeEndDate}
             value={endDate}
             filterDate={endDateSelectable}
           />
+          <Form.Button onClick={refreshNeos}>
+            <Icon name='search' /> Search
+          </Form.Button>
         </Form.Group>
       </Form>
 
