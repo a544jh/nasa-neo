@@ -14,7 +14,12 @@ import "./App.css";
 import "semantic-ui-css/semantic.min.css";
 import SemanticDatepicker from "react-semantic-ui-datepickers";
 import "react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css";
-import { fetchNeos, NearEarthObject } from "./NeoApi";
+import {
+  fetchNeos,
+  NearEarthObject,
+  neoSortKeyGetters,
+  NeoSortKey,
+} from "./NeoApi";
 import { add, startOfToday } from "date-fns";
 import { SemanticDatepickerProps } from "react-semantic-ui-datepickers/dist/types";
 import _ from "lodash";
@@ -26,6 +31,11 @@ function App() {
   const [endDate, setEndDate] = useState<Date>(() =>
     add(startOfToday(), { days: 7 })
   );
+  const [sortKey, setSortKey] = useState<NeoSortKey>("date");
+  type SortDirection = "ascending" | "descending";
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    "ascending"
+  );
   const [hasError, setError] = useState(false);
 
   useEffect(() => {
@@ -36,7 +46,13 @@ function App() {
     setLoading(true);
     fetchNeos(startDate, endDate)
       .then((neos) => {
-        setNeos(neos);
+        setNeos(
+          _.orderBy(
+            neos,
+            neoSortKeyGetters[sortKey],
+            sortDirection === "ascending" ? "asc" : "desc"
+          )
+        );
         setLoading(false);
       })
       .catch((error) => {
@@ -72,6 +88,27 @@ function App() {
     return date >= startDate && date <= maxEndDate;
   };
 
+
+  // TODO: fixed column width
+  const onSort = (newSortKey: NeoSortKey) => {
+    let newSortDirection: SortDirection;
+    if (newSortKey === sortKey) {
+      newSortDirection =
+        sortDirection === "ascending" ? "descending" : "ascending";
+    } else {
+      newSortDirection = "ascending";
+    }
+    setSortKey(newSortKey);
+    setSortDirection(newSortDirection);
+    setNeos(
+      _.orderBy(
+        neos,
+        neoSortKeyGetters[newSortKey],
+        newSortDirection === "ascending" ? "asc" : "desc"
+      )
+    );
+  };
+
   const maxDiameterNeo = _.maxBy(
     neos,
     (neo) => neo.estimated_diameter.meters.estimated_diameter_max
@@ -85,6 +122,15 @@ function App() {
   );
   const maxDistance =
     maxDistanceNeo?.close_approach_data[0].miss_distance.kilometers;
+
+  const SortHeaderCell: React.FC<{ column: NeoSortKey }> = (props) => (
+    <Table.HeaderCell
+      sorted={props.column === sortKey ? sortDirection : undefined}
+      onClick={() => onSort(props.column)}
+    >
+      {props.children}
+    </Table.HeaderCell>
+  );
 
   return (
     <Container style={{ paddingTop: "1rem" }}>
@@ -119,14 +165,14 @@ function App() {
         <Dimmer active={isLoading} verticalAlign="top">
           <Loader />
         </Dimmer>
-        <Table celled>
+        <Table celled sortable>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>Date</Table.HeaderCell>
-              <Table.HeaderCell>Time (UTC)</Table.HeaderCell>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Diameter</Table.HeaderCell>
-              <Table.HeaderCell>Miss Distance</Table.HeaderCell>
+              <SortHeaderCell column="date">Date</SortHeaderCell>
+              <SortHeaderCell column="date">Time (UTC)</SortHeaderCell>
+              <SortHeaderCell column="name">Name</SortHeaderCell>
+              <SortHeaderCell column="diameter">Diameter</SortHeaderCell>
+              <SortHeaderCell column="distance">Miss Distance</SortHeaderCell>
             </Table.Row>
           </Table.Header>
 

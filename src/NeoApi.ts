@@ -1,4 +1,4 @@
-import { formatISO } from "date-fns";
+import { formatISO, parseISO } from "date-fns";
 
 interface NeoApiResponse {
   near_earth_objects: NeoDates;
@@ -25,8 +25,8 @@ export interface NearEarthObject {
 
 interface CloseApproachData {
   close_approach_date: string;
-  close_approach_date_full: string;
-  epoch_date_close_approach: string;
+  close_approach_date_full: string | null;
+  epoch_date_close_approach: string | null;
   relative_velocity: {
     kilometers_per_second: string;
     kilometers_per_hour: string;
@@ -45,6 +45,24 @@ interface EstimatedDiameter {
   estimated_diameter_min: number;
   estimated_diameter_max: number;
 }
+
+export type NeoSortKey = keyof typeof neoSortKeyGetters;
+
+export const neoSortKeyGetters = {
+  distance: (neo: NearEarthObject) =>
+    Number(neo.close_approach_data[0].miss_distance.kilometers),
+  diameter: (neo: NearEarthObject) =>
+    neo.estimated_diameter.meters.estimated_diameter_max,
+  name: (neo: NearEarthObject) => neo.name,
+  date: (neo: NearEarthObject): number => {
+    if (neo.close_approach_data[0].epoch_date_close_approach !== null) {
+      return Number(neo.close_approach_data[0].epoch_date_close_approach);
+    }
+    return parseISO(
+      neo.close_approach_data[0].close_approach_date + "T00:00Z"
+    ).getTime();
+  },
+};
 
 export async function fetchNeos(
   startDate: Date,
