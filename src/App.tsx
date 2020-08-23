@@ -239,7 +239,15 @@ function App() {
                 <Table.Cell>
                   {neo.close_approach_data[0].close_approach_date_full}
                 </Table.Cell>
-                <Table.Cell>{neo.name}</Table.Cell>
+                <Table.Cell>
+                  <a
+                    href={neo.nasa_jpl_url}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    {neo.name}
+                  </a>
+                </Table.Cell>
                 <Table.Cell>
                   {neo.estimated_diameter.meters.estimated_diameter_min.toFixed(
                     1
