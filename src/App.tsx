@@ -9,6 +9,7 @@ import {
   Icon,
   Progress,
   Message,
+  Menu,
 } from "semantic-ui-react";
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
@@ -20,7 +21,7 @@ import {
   neoSortKeyGetters,
   NeoSortKey,
 } from "./NeoApi";
-import { add, startOfToday } from "date-fns";
+import { add, startOfToday, differenceInCalendarDays, sub } from "date-fns";
 import { SemanticDatepickerProps } from "react-semantic-ui-datepickers/dist/types";
 import _ from "lodash";
 
@@ -31,6 +32,7 @@ function App() {
   const [endDate, setEndDate] = useState<Date>(() =>
     add(startOfToday(), { days: 7 })
   );
+  const daysDifference = differenceInCalendarDays(endDate, startDate);
   const [sortKey, setSortKey] = useState<NeoSortKey>("date");
   type SortDirection = "ascending" | "descending";
   const [sortDirection, setSortDirection] = useState<SortDirection>(
@@ -39,10 +41,16 @@ function App() {
   const [hasError, setError] = useState(false);
 
   useEffect(() => {
-    refreshNeos();
+    refreshNeos(startDate, endDate, sortKey, sortDirection);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const refreshNeos = () => {
+  const refreshNeos = (
+    startDate: Date,
+    endDate: Date,
+    sortKey: NeoSortKey,
+    sortDirection: SortDirection
+  ) => {
     setLoading(true);
     fetchNeos(startDate, endDate)
       .then((neos) => {
@@ -54,6 +62,7 @@ function App() {
           )
         );
         setLoading(false);
+        setError(false);
       })
       .catch((error) => {
         setNeos([]);
@@ -69,7 +78,7 @@ function App() {
     const date = data.value;
     if (date instanceof Date) {
       setStartDate(date);
-      setEndDate(add(date, { days: 7 }));
+      setEndDate(add(date, { days: daysDifference }));
     }
   };
 
@@ -87,7 +96,6 @@ function App() {
     const maxEndDate = add(startDate, { days: 7 });
     return date >= startDate && date <= maxEndDate;
   };
-
 
   // TODO: fixed column width
   const onSort = (newSortKey: NeoSortKey) => {
@@ -132,8 +140,45 @@ function App() {
     </Table.HeaderCell>
   );
 
+  const PaginationMenu = () => {
+    let daysAmountText: string;
+    if (daysDifference + 1 > 1) {
+      daysAmountText = `${daysDifference + 1} days`;
+    } else {
+      daysAmountText = "day";
+    }
+
+    return (
+      <Menu compact>
+        <Menu.Item
+          onClick={() => {
+            const newStartDate = sub(startDate, { days: daysDifference + 1 });
+            setStartDate(newStartDate);
+            const newEndDate = sub(endDate, { days: daysDifference + 1 });
+            setEndDate(newEndDate);
+            refreshNeos(newStartDate, newEndDate, sortKey, sortDirection);
+          }}
+        >
+          <Icon name="chevron left" />
+          Previous {daysAmountText}
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            const newStartDate = add(startDate, { days: daysDifference + 1 });
+            setStartDate(newStartDate);
+            const newEndDate = add(endDate, { days: daysDifference + 1 });
+            setEndDate(newEndDate);
+            refreshNeos(newStartDate, newEndDate, sortKey, sortDirection);
+          }}
+        >
+          Next {daysAmountText} <Icon name="chevron right" />
+        </Menu.Item>
+      </Menu>
+    );
+  };
+
   return (
-    <Container style={{ paddingTop: "1rem" }}>
+    <Container style={{ paddingTop: "1rem", paddingBottom: "1rem" }}>
       <Header as="h1">Near Earth Objects</Header>
       <Form>
         <Form.Group inline>
@@ -148,11 +193,17 @@ function App() {
             value={endDate}
             filterDate={endDateSelectable}
           />
-          <Form.Button onClick={refreshNeos}>
+          <Form.Button
+            onClick={() =>
+              refreshNeos(startDate, endDate, sortKey, sortDirection)
+            }
+          >
             <Icon name="search" /> Search
           </Form.Button>
         </Form.Group>
       </Form>
+
+      <PaginationMenu />
 
       {hasError ? (
         <Message error>
@@ -165,7 +216,7 @@ function App() {
         <Dimmer active={isLoading} verticalAlign="top">
           <Loader />
         </Dimmer>
-        <Table celled sortable>
+        <Table celled sortable style={{ marginBottom: "1rem" }}>
           <Table.Header>
             <Table.Row>
               <SortHeaderCell column="date">Date</SortHeaderCell>
@@ -222,6 +273,8 @@ function App() {
           </Table.Body>
         </Table>
       </Dimmer.Dimmable>
+
+      <PaginationMenu />
     </Container>
   );
 }
