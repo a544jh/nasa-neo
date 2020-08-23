@@ -1,3 +1,12 @@
+# NASA Near Earth Object API Client
+
+This React App lets you browse Near Earth Objects from the NASA NEO API in asortable table. Due to API limitations, only a span of 8 days can be viewed at once.
+
+### Setting the NASA API key
+You can set the API key for the app to use by setting `nasaApiKey` in your browser's local storage. By default the demo API key will be used.
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

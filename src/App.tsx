@@ -43,7 +43,7 @@ function App() {
   useEffect(() => {
     refreshNeos(startDate, endDate, sortKey, sortDirection);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // Fetch neos on initial render
 
   const refreshNeos = (
     startDate: Date,
@@ -97,7 +97,6 @@ function App() {
     return date >= startDate && date <= maxEndDate;
   };
 
-  // TODO: fixed column width
   const onSort = (newSortKey: NeoSortKey) => {
     let newSortDirection: SortDirection;
     if (newSortKey === sortKey) {
@@ -117,6 +116,15 @@ function App() {
     );
   };
 
+  const SortHeaderCell: React.FC<{ column: NeoSortKey }> = (props) => (
+    <Table.HeaderCell
+      sorted={props.column === sortKey ? sortDirection : undefined}
+      onClick={() => onSort(props.column)}
+    >
+      {props.children}
+    </Table.HeaderCell>
+  );
+
   const maxDiameterNeo = _.maxBy(
     neos,
     (neo) => neo.estimated_diameter.meters.estimated_diameter_max
@@ -130,15 +138,6 @@ function App() {
   );
   const maxDistance =
     maxDistanceNeo?.close_approach_data[0].miss_distance.lunar;
-
-  const SortHeaderCell: React.FC<{ column: NeoSortKey }> = (props) => (
-    <Table.HeaderCell
-      sorted={props.column === sortKey ? sortDirection : undefined}
-      onClick={() => onSort(props.column)}
-    >
-      {props.children}
-    </Table.HeaderCell>
-  );
 
   const PaginationMenu = () => {
     let daysAmountText: string;
