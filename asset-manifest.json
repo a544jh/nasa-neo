@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/nasa-neo/static/css/main.27fd15f6.chunk.css",
+    "main.js": "/nasa-neo/static/js/main.09361a6d.chunk.js",
+    "main.js.map": "/nasa-neo/static/js/main.09361a6d.chunk.js.map",
+    "runtime-main.js": "/nasa-neo/static/js/runtime-main.3eefe5b7.js",
+    "runtime-main.js.map": "/nasa-neo/static/js/runtime-main.3eefe5b7.js.map",
+    "static/css/2.222677ad.chunk.css": "/nasa-neo/static/css/2.222677ad.chunk.css",
+    "static/js/2.75094c18.chunk.js": "/nasa-neo/static/js/2.75094c18.chunk.js",
+    "static/js/2.75094c18.chunk.js.map": "/nasa-neo/static/js/2.75094c18.chunk.js.map",
+    "index.html": "/nasa-neo/index.html",
+    "precache-manifest.4ecea5c8340b005f82f9d7a4b8219c74.js": "/nasa-neo/precache-manifest.4ecea5c8340b005f82f9d7a4b8219c74.js",
+    "service-worker.js": "/nasa-neo/service-worker.js",
+    "static/css/2.222677ad.chunk.css.map": "/nasa-neo/static/css/2.222677ad.chunk.css.map",
+    "static/css/main.27fd15f6.chunk.css.map": "/nasa-neo/static/css/main.27fd15f6.chunk.css.map",
+    "static/js/2.75094c18.chunk.js.LICENSE.txt": "/nasa-neo/static/js/2.75094c18.chunk.js.LICENSE.txt",
+    "static/media/semantic.min.css": "/nasa-neo/static/media/outline-icons.ef60a4f6.woff"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3eefe5b7.js",
+    "static/css/2.222677ad.chunk.css",
+    "static/js/2.75094c18.chunk.js",
+    "static/css/main.27fd15f6.chunk.css",
+    "static/js/main.09361a6d.chunk.js"
+  ]
+}
