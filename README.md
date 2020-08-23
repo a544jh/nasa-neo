@@ -2,6 +2,8 @@
 
 This React App lets you browse Near Earth Objects from the NASA NEO API in asortable table. Due to API limitations, only a span of 8 days can be viewed at once.
 
+## [Demo](https://a544jh.github.io/nasa-neo)
+
 ### Setting the NASA API key
 You can set the API key for the app to use by setting `nasaApiKey` in your browser's local storage. By default the demo API key will be used.
 
