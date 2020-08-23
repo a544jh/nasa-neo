@@ -50,7 +50,7 @@ export type NeoSortKey = keyof typeof neoSortKeyGetters;
 
 export const neoSortKeyGetters = {
   distance: (neo: NearEarthObject) =>
-    Number(neo.close_approach_data[0].miss_distance.kilometers),
+    Number(neo.close_approach_data[0].miss_distance.lunar),
   diameter: (neo: NearEarthObject) =>
     neo.estimated_diameter.meters.estimated_diameter_max,
   name: (neo: NearEarthObject) => neo.name,

@@ -126,10 +126,10 @@ function App() {
 
   const maxDistanceNeo = _.maxBy(
     neos,
-    (neo) => neo.close_approach_data[0].miss_distance.kilometers
+    (neo) => neo.close_approach_data[0].miss_distance.lunar
   );
   const maxDistance =
-    maxDistanceNeo?.close_approach_data[0].miss_distance.kilometers;
+    maxDistanceNeo?.close_approach_data[0].miss_distance.lunar;
 
   const SortHeaderCell: React.FC<{ column: NeoSortKey }> = (props) => (
     <Table.HeaderCell
@@ -212,11 +212,11 @@ function App() {
         </Message>
       ) : null}
 
-      <Dimmer.Dimmable>
+      <Dimmer.Dimmable blurring>
         <Dimmer active={isLoading} verticalAlign="top">
           <Loader />
         </Dimmer>
-        <Table celled sortable style={{ marginBottom: "1rem" }}>
+        <Table celled sortable fixed style={{ marginBottom: "1rem" }}>
           <Table.Header>
             <Table.Row>
               <SortHeaderCell column="date">Date</SortHeaderCell>
@@ -252,11 +252,11 @@ function App() {
                   {neo.estimated_diameter.meters.estimated_diameter_min.toFixed(
                     1
                   )}
-                  {"m - "}
+                  {" m - "}
                   {neo.estimated_diameter.meters.estimated_diameter_max.toFixed(
                     1
                   )}
-                  m
+                  {" m"}
                   <Progress
                     value={neo.estimated_diameter.meters.estimated_diameter_max}
                     total={maxDiameter}
@@ -266,11 +266,11 @@ function App() {
                 </Table.Cell>
                 <Table.Cell>
                   {Number(
-                    neo.close_approach_data[0].miss_distance.kilometers
-                  ).toFixed(0)}
-                  km
+                    neo.close_approach_data[0].miss_distance.lunar
+                  ).toFixed(2)}
+                  {" LD"}
                   <Progress
-                    value={neo.close_approach_data[0].miss_distance.kilometers}
+                    value={neo.close_approach_data[0].miss_distance.lunar}
                     total={maxDistance}
                     size="tiny"
                     style={{ margin: 0 }}
